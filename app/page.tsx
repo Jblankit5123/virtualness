@@ -23,14 +23,15 @@ const HomePage = () => {
 
 
   const onChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    setLoading(true);
-    if (e?.target?.value) {
+    const searchQuery = e?.target?.value;
+    if (searchQuery) {
       const res = await getData(`https://api.github.com/search/repositories?q=${e?.target?.value}`);
       setData(res?.items);
       setLoading(false);
     } else {
       fetchData();
     }
+    setCurrentPage(1)
   };
 
   const fetchData = () => {
@@ -48,19 +49,18 @@ const HomePage = () => {
     fetchData();
   }, []);
 
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil((data && data.length) / ITEMS_PER_PAGE);
 
-  const paginatedData = data.slice(
+  const paginatedData = (data && data.length) ? data.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
-  );
+  ) : [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
   return (
-
     <div className="max-w-5xl mx-auto bg-white p-4 rounded-md shadow-md">
       <div className="flex items-center justify-center m-8">
         {isClient ? <input
